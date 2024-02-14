@@ -11,16 +11,30 @@ describe("SaveEther Contract", function () {
     saveEther = await SaveEther.deploy();
   });
 
-  it("should deposit Ether", async function () {
-    const depositAmount = ethers.parseEther("1");
+  it("should deposit Ether successfully", async function () {
+    const [sender] = await ethers.getSigners();
+    const connectedSaveEther = saveEther.connect(sender);
 
-    const [signer] = await ethers.getSigners();
-    const connectedSaveEther = saveEther.connect(signer);
+    const depositAmount = ethers.parseEther("2");
 
-    await connectedSaveEther.deposit({ value: depositAmount });
+    await expect(connectedSaveEther.deposit({ value: depositAmount }))
+      .to.emit(saveEther, "SavingSuccessful")
+      .withArgs(sender.address, depositAmount);
 
-    const userSavings = await connectedSaveEther.checkSavings(signer.address);
-    expect(userSavings).to.equal(depositAmount);
+    const userSavings = await connectedSaveEther.checkSavings(sender.address);
+    expect(userSavings).to.equal(
+      depositAmount,
+      "User savings should match the deposited amount"
+    );
+  });
+
+  it("should revert on deposit with too small amount", async function () {
+    const [sender] = await ethers.getSigners();
+    const connectedSaveEther = saveEther.connect(sender);
+
+    await expect(connectedSaveEther.deposit({ value: 0 })).to.be.revertedWith(
+      "This amount is too small"
+    );
   });
 
   it("should withdraw Ether", async function () {
@@ -36,6 +50,7 @@ describe("SaveEther Contract", function () {
     const userSavings = await connectedSaveEther.checkSavings(signer.address);
     expect(userSavings).to.equal(0);
   });
+
   it("should send Ether to another account", async function () {
     const depositAmount = ethers.parseEther("2");
 
@@ -57,6 +72,7 @@ describe("SaveEther Contract", function () {
     );
     expect(sendersBalance).to.equal(senderSavings);
   });
+
   it("should check contract balance", async function () {
     const [sender] = await ethers.getSigners();
     const connectedSaveEther = saveEther.connect(sender);
