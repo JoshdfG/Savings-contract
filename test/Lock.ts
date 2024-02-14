@@ -14,11 +14,9 @@ describe("SaveEther Contract", function () {
   it("should deposit Ether", async function () {
     const depositAmount = ethers.parseEther("1");
 
-    // Connect to the contract using the signer
     const [signer] = await ethers.getSigners();
     const connectedSaveEther = saveEther.connect(signer);
 
-    // Deposit Ether
     await connectedSaveEther.deposit({ value: depositAmount });
 
     // Check user savings
@@ -29,11 +27,9 @@ describe("SaveEther Contract", function () {
   it("should withdraw Ether", async function () {
     const depositAmount = ethers.parseEther("2");
 
-    // Connect to the contract using the signer
     const [signer] = await ethers.getSigners();
     const connectedSaveEther = saveEther.connect(signer);
 
-    // Deposit Ether
     await connectedSaveEther.deposit({ value: depositAmount });
 
     // Withdraw Ether
