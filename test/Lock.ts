@@ -65,4 +65,21 @@ describe("SaveEther Contract", function () {
     );
     expect(sendersBalance).to.equal(senderSavings);
   });
+  it("should check contract balance", async function () {
+    const [sender] = await ethers.getSigners();
+    const connectedSaveEther = saveEther.connect(sender);
+
+    // Deposit some Ether to the contract
+    const depositAmount = ethers.parseEther("2");
+    await connectedSaveEther.deposit({ value: depositAmount });
+
+    // Check contract balance
+    const contractBalance = await connectedSaveEther.checkBalance();
+
+    // Expected balance should be the deposited amount
+    expect(contractBalance).to.equal(
+      depositAmount,
+      "Contract balance should match the deposited amount"
+    );
+  });
 });
