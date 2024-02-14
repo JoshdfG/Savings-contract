@@ -39,4 +39,30 @@ describe("SaveEther Contract", function () {
     const userSavings = await connectedSaveEther.checkSavings(signer.address);
     expect(userSavings).to.equal(0);
   });
+  it("should send Ether to another account", async function () {
+    const depositAmount = ethers.parseEther("2");
+
+    // Connect to the contract using two signers
+    const [sender, receiver] = await ethers.getSigners();
+    const connectedSaveEther = saveEther.connect(sender);
+
+    // Deposit Ether
+    await connectedSaveEther.deposit({ value: depositAmount });
+
+    // Send Ether to another account
+    await connectedSaveEther.sendOutEther(receiver.address, depositAmount);
+
+    // Check sender's savings
+    const senderSavings = await connectedSaveEther.checkSavings(sender.address);
+    expect(senderSavings).to.equal(
+      0,
+      "Sender's savings should be reduced to  0"
+    );
+
+    //Check sender's savings
+    const sendersBalance = await connectedSaveEther.checkSavings(
+      sender.address
+    );
+    expect(sendersBalance).to.equal(senderSavings);
+  });
 });
