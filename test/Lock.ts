@@ -1,4 +1,3 @@
-/// <reference types="ethers" />
 import { ethers } from "hardhat";
 import { expect } from "chai";
 import { SaveEther } from "../typechain-types";
